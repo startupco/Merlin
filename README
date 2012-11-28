@@ -1,0 +1,139 @@
+Merlin - Readme document
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$Rev:: 71                    $:  Revision of last commit
+$Author:: ppednekar          $:  Author of last commit
+$Date:: 2012-11-07 19:32:14 #$:  Date of last commit
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Contents:
+  Overview
+  More Information and license
+  Requirements for Server
+  Requirements for Clients
+  Merlin Installation
+  Specifications for the files to be merged
+  UI for using Merlin
+  Credits
+
+--------------
+|* Overview *|
+--------------
+Merlin is an open source, document merging system.
+1. It can merge multiple docx documents to produce single docx output document.
+2. It can merge multiple pptx documents to produce single pptx output document.
+3. It can merge multiple pdf documents to produce single pdf output document.
+It also supports mail merging, wherein dynamic data could be inserted into
+the documents(pptx and docx).
+
+----------------------------------
+|* More information and licence *|
+----------------------------------
+Merlin - document merging system
+Copyright 2011, Primary Modules, Inc. (http://primarymodules.com)
+
+-----------------------------
+|* Requirements for Server *|
+-----------------------------
+* Linux or Windows 
+* MySQL 
+* Apache 
+* PHP 5.2.0 or greater with the following libraries:
+    Linux systems
+        Compile PHP with zip support by using the --enable-zip configure option.
+    Windows
+        Enable php_zip.dll inside of php.ini.
+
+    --enable-libxml is also required
+
+------------------------------
+|* Requirements for Clients *|
+------------------------------
+Mozilla FireFox,Internet Explorer 7 or later     
+
+-------------------------------
+|* Merlin Installation *|
+-------------------------------
+1. Download the latest merlin from 'https://primod.svn.cvsdude.com/merlin/trunk'(in htdocs):
+2. Give merlin/files and merlin/tests/files folders all the permissions(0777)
+3. Run test cases(docx_get_methods_test.php and docx_set_methods_test.php;pptx_get_methods_test.php and pptx_set_methods_test.php)
+    /merlin/tests
+	If they run without any errors all merging is working fine and you are ready to use merlin for merging.
+4. In config.inc.php
+    merlin_default_input_dir: is the directory of input files to be merged(merlin/files).
+                              Files to be merged should be put here.
+			      change index to merge the required files(merlin/files).
+    merlin_default_output_dir: is the output files directory where the merged output file is generated.
+    merlin_default_test_input_dir : is the directory of input files to be merged for test cases(merlin/tests/files).
+                                    Files to be merged in test cases should be put here.
+    merlin_default_test_output_dir : is the output files directory(merlin/tests/files).
+                                      Merged output file from test cases will be generated here.
+
+------------------------------------------------
+|* Specifications for the files to be merged *|
+------------------------------------------------
+I.   Files given for merging should not be encrypted.
+II.  For PPTX
+     1. Files taken as input files for merging should have same base template properties,
+       else the slide size,note size, default text style,presentation properties, view-properties 
+       and table-styles will be taken from the 1st file that is given for merging.
+     2. In future releases an configuration layer will be given where you could set all these properties.
+
+III. For DOCX
+     1. Files taken as input files for merging should have same base template properties,
+       else settings,styles, themes and numbering will be taken from
+       the 1st file that is given for merging.
+     2. In future releases an configuration layer will be given where you could set all these properties.
+
+--------------------------
+|* UI for using Merlin *|
+--------------------------
+1) Include Mergeable Factory.Call static method createMergeableObject with file and filetype as parameters.
+   It creates mergeable object. Use this object to append source mergeables to destination.
+   eg:
+      require_once $rootDirectory . '/classes/mergeable_factory.php';
+      $obj1= MergeableFactory::createMergeableObject($dest);
+      $obj2= MergeableFactory::createMergeableObject($source);
+      $obj1->append($obj2);
+   We can also create objects of the respective mergeable(eg:PptxMergeable) directly for appending source to destination.
+   eg:1
+      require_once $rootDirectory . '/classes/mergeables/pptx_mergeables.php';
+      $obj1 = new PptxMergeables($dest);
+      $obj2 = new PptxMergeables($source1);
+      $obj3 = new PptxMergeables($source2);
+      $obj1->append($obj2);
+      $obj1->append($obj3);
+   eg:2
+      require_once $rootDirectory . '/classes/mergeables/docx_mergeables.php';
+      $obj1 = new DocxMergeables($dest);
+      $obj2 = new DocxMergeables($source1);
+      $obj3 = new DocxMergeables($source2);
+      $obj1->append($obj2);
+      $obj1->append($obj3);
+   eg:3
+      require_once $rootDirectory . '/classes/mergeables/pdf_mergeables.php';
+      $obj1 = new PdfMergeables($dest);
+      $obj2 = new PdfMergeables($source1);
+      $obj3 = new PdfMergeables($source2);
+      $obj1->append($obj2);
+      $obj1->append($obj3);
+   Mail merge have also been implemented in merlin,wherein the merge words will
+   be replace with the available data.
+   Merge words must follow $data[account][name] syntax
+   eg:
+      $obj = MergeableFactory::createMergeableObject($dest);
+      $data = array();
+      $data['account']['first_name'] = 'Pooja';
+      $data['account']['address'] = 'Raya Smriti,Khorlim Mapusa Goa.';
+      $data['account']['phone'] = 9860830054;
+      $obj->mergePhpVariables($data);
+      In file the merge word would be like {$data['account']['first_name']}.
+   (For more details refer index.php)
+
+
+-------------
+|* Credits *|
+-------------
+merlin
+Copyright 2011, Primary Modules, Inc. 
+http://primarymodules.com
+Last Update: 2011-07-01
